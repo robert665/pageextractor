@@ -41,19 +41,19 @@ At last the script reads every of the above files line by line to constructs a j
 Starting with a naming from "00object.json" to possibly "99object.json" and stores them in the folder res/jsons
 This means right now the upper border for jsons is limited to 99 objects.
 
-1.
+1. Starting the server
 Start the Express server by running the command "node server.js" in the terminal in the pageextractor directory.
 If the start was successfull "server listening on 8080" should appear in the terminal.
 When the server has started it reads in all events that are stored in res/jsons and also all files (if existing) from res/savedEvents.
 The files will be parsed to json and saved dynamically and separately in the arrays "eventList" and "savedEventList" 
 
-2.
+2. Visiting the Website
 Type "localhost:8080" in your browser searchfield to open the Webapp.
 By sending a GET request to the server the index.html is delivered and the indexscript.js will be executed.
 The indexscript.js innitially calls the method fetchEvents() which sends a fetch GET request to recieve all data which is stored in 
 "eventList" on the server. Afterwards the data is parsed to json and inserted in various html tags to display it to the user.
 
-3.
+3. Switching to the "interested-list"
 The upper right icon can be used to switch the view from all current events to the events the user has saved.
 This is provoked by calling the fetchSavedEvents() which does exactly the same as the fetchEvents() but referencing to "savedEventList".
 Additionally it clears the screen from previous events and displays the fetched Data.
