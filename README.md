@@ -31,11 +31,11 @@ After that information about the upcoming events are gathered and stored into fi
 At last the script reads every of the above files line by line to constructs a json in the following pattern:
 
 {
-  "link": "https://z-bau.com/programm/2022-11-27/asphaltflache-schallschutzwand/ak-rollgarten",
-  "event": "AK Rollgarten",
-  "text": "> Wir freuen uns auf euch! 🛹🛼✨🎶 </",
-  "date": "2022-11-27",
-  "location": "asphaltflache-schallschutzwand"
+  "link": "https://z-bau.com/programm/2022-11-27/asphaltflache-schallschutzwand/ak-rollgarten", \n
+  "event": "AK Rollgarten", \n
+  "text": "> Wir freuen uns auf euch! 🛹🛼✨🎶 </", \n
+  "date": "2022-11-27", \n
+  "location": "asphaltflache-schallschutzwand" \n
 }
 
 Starting with a naming from "00object.json" to possibly "99object.json" and stores them in the folder res/jsons
