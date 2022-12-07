@@ -59,7 +59,7 @@ This is provoked by calling the fetchSavedEvents() which does exactly the same a
 Additionally it clears the screen from previous events and displays the fetched Data.
 The same Button can be used to return to the initial state of the site.
 
-Every <div> with the class "event" has a button called "hinzufügen" to save it on serversite at the directory res/savedEvents as an actual file.
+Every div with the class "event" has a button called "hinzufügen" to save it on serversite at the directory res/savedEvents as an actual file.
 This ensures that saved events will not be lost when the server has been restarted.
 
 ---------------
