@@ -38,7 +38,7 @@
 #Block 1
 echo --------------trying to download the webpage Z-Bau.com--------------------
 wget www.z-bau.com/programm
-#mv programm res/
+mv programm res/
 grep data-url=\"https://z-bau.com/programm res/programm | cut -d "/" --fields 5-7 | grep -v \" > res/events.txt
 echo --------------printing Events--------------------------------------------
 cat res/events.txt
