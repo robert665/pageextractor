@@ -1,0 +1,146 @@
+website herunterladen:
+wget www.z-bau.com/programm
+
+link für veranstaltung: 
+zeile: 817
+data-url= "https://z-bau.com/programm/2022-11-17/kv/spiritus-mortis-fi-dying-men/"
+
+tags zum rausziehen: 
+Veranstalter:  z-bau
+datum: 	       2022-11-17
+ort:           kv
+veranstaltung: spritus-mortis-fi-dying-men
+
+    data-url="https://z-bau.com/programm
+    
+befehl um alle event urls auszugeben:
+grep data-url=\"https://z-bau.com/programm programm	
+// | wc --lines  => anzahl der veranstaltungen
+
+befehl um die individuelle veranstaltung aus der liste zu holen
+cut -d "/" --fields 5-8 events.txt
+
+problem überflüssige zeichenketten mit " am ende
+
+grep -v \" filteredevents.txt
+// gibt nur die echten veranstaltungen aus
+
+Links herausfiltern
+-------------------
+grep data-url=\"https://z-bau.com/programm programm | cut -d \" --fields 2
+
+gibt alle links für einzelne tage & veranstaltungen an
+einzelne tage können nicht verwedet werden => müssen herausgefiltert werden
+BESSER: 
+an die events die zbau url ankleben
+sed 's/^/https:\/\/z-bau.com\/programm\//' events.txt > eventlinks.txt
+
+VERANSTALTUNGSTEXTE HERAUSFILTERN
+---------------------------------
+Texte herausziehen und trennung durch delimter
+sed -n '/event__info-text/,/div/{s/div/DELIMITER/;/event__info-text/d;p}' programm
+
+(in die erste zeile --END OF BLOCK -- einfügen
+sed '1 s/^/DELIMTER\n/' eventtexte.txt)
+
+dann alles zwischen --END OF BLOCK -- in eine zeile schreiben
+-> | tr -d '\n' > oneline.txt
+
+sed -n '/event__info-text/,/div/{s/div/DELIMITER/;/event__info-text/d;p}' programm | tr -d '\n' > oneline.txt
+
+alles zwischen --END OF BLOCK -- auswählen
+
+1. Texte herausziehen und trennung durch DELIMITER
+2. kompletten Text in eine zeile schreiben
+3. bei jedem delimiter eine neue zeile anfangen
+=> jeder event text steht nun in einer eigenen zeile
+sed -n '/event__info-text/,/div/{s/div/\DELIMITER/;/event__info-text/d;p}' programm | tr -d '\n' | sed 's/DELIMITER/\n/g' > oneliners.txt
+
+
+
+ALLES NACHEINANDER IN EIN FILE EINFÜGEN
+-------------------------------------------
+
+paste -d'\n' eventlinks.txt events.txt oneliners.txt > sortEventListe.txt
+
+JSON OBJEKT(E/ LISTE)
+----------------
+lines zählen, dannach durch jede line durchgehen und diese in json format sring einfügen
+diesen string dann in eine datei speichern
+
+lines=$(wc -l < res/events.txt)
+i=1
+while [ $i -le $lines ]; do
+      event=$(sed -n "$i p" < res/events.txt)
+      link=$(sed -n "$i p" < res/eventlinks.txt)
+      text=$(sed -n "$i p" < res/oneliners.txt)
+      echo $i
+      
+      JSON='{"link":"'"$link"'","event":"'"$event"'","text":"'"$text"'"}'
+      echo $JSON | jq > res/jsons/"$i"object.json
+      let i=i+1
+done
+
+
+welche infos brauch ich? 
+events unterteilen in datum,ort und veranstaltung -> hier die bindestriche rauslöschen
+neu ins json einfügen
+
+dannach shells cripting erstmal abgeschlossen.
+
+jsons in extractor js laden 
+dann in liste einfügen
+liste verschicken und displayen
+
+
+
+
+
+<h4 class="event__main-title"><span>Egotronic - Skurrile Minderheiten Tour</span>
+
+sed -n '/event__main-title/,/\/span/{s/\/span/DELIMTER/;/\/span/d;p}' res/programm | tr --delete '\n' | tr 'DELIMTER' '\n'
+
+
+
+
+i=1
+while [ $i -le $lines ]; do
+      event=$(sed -n "$i p" < res/events.txt)
+      link=$(sed -n "$i p" < res/eventlinks.txt)
+      text=$(sed -n "$i p" < res/oneliners.txt)
+      echo $i
+      
+      JSON='{"link":"'"$link"'","event":"'"$event"'","text":"'"$text"'"}'
+      echo $JSON | jq > res/jsons/"$i"object.json
+      let i=i+1
+done
+
+
+
+#Block 4
+lines=$(wc -l < res/events.txt)
+i=1
+while [ $i -le $lines ]; do
+    eventline=$(sed -n "$i p" < res/events.txt)
+    date=$(echo $eventline | cut -d "/" --field 1)
+    location=$(echo $eventline |cut -d "/" --field 2)
+    event=$(echo $eventline |cut -d "/" --field 3)
+    link=$(sed -n "$i p" < res/eventlinks.txt)
+    text=$(sed -n "$i p" < res/oneliners.txt)
+    echo $i
+    
+    JSON='{"link":"'"$link"'","event":"'"$event"'","text":"'"$text"'","date":"'"$date"'","location":"'"$location"'"}'
+    echo $JSON | jq > res/jsons/"$i"object.json
+    let i=i+1
+
+
+
+
+
+
+
+
+
+
+
+https://www.techpaste.com/2011/08/bash-script-crawl-download-images-web-page/
