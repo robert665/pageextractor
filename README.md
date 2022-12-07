@@ -10,8 +10,8 @@ Currently the only website which is searched is "www.z-bau.com", but more websit
 Disclaimer:
 
 This Project uses a Node Express Server to provide the Data to the client. 
-To fetch the Data a bash script is used.
-Right now the bash script is NOT automatically started and NOT tested on Windows.
+To fetch the Data a bash script is used. <br>
+Right now the bash script is NOT automatically started and NOT tested on Windows. <br>
 For testing purposes the needed Data is already present and does not has to be fetched by the bash script.
 If you want to use the script the commands wget and jq should be installed.
 ---------------
@@ -20,13 +20,13 @@ Process Flow:
 
 (0. optional): 
 First start the bash script manually over the terminal.
-the bash script downloads the html page from "www.z-bau.com" and stores it in a file called "programm" in res directory.
+The bash script downloads the html page from "www.z-bau.com" and stores it in a file called "programm" in res directory.
 After that information about the upcoming events are gathered and stored into files:
 
--the links of every event -> eventlinks.txt
--the date, location and name -> events.txt
--the discription of the event -> oneliners.txt
--the titel of the event -> titel.txt
+-the links of every event -> eventlinks.txt <br>
+-the date, location and name -> events.txt <br>
+-the discription of the event -> oneliners.txt <br>
+-the titel of the event -> titel.txt <br>
 
 At last the script reads every of the above files line by line to constructs a json in the following pattern:
 
