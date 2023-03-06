@@ -3,6 +3,7 @@ const port = 8080;
 const express = require('express');
 const path = require('path');
 var bodyParser = require('body-parser');
+const { exec } = require('child_process');
 const app = express();
 
 var directoryPathZbau = path.join(__dirname, 'res/jsons');
@@ -11,6 +12,7 @@ var directoryPathSaved = path.join(__dirname, 'res/savedEvents');
 var eventList = [];
 var savedEventList = [];
 
+runShellScripts();
 
 readInDirectory(directoryPathZbau, eventList);
 readInDirectory(directoryPathSaved, savedEventList);
@@ -61,7 +63,7 @@ app.post("/save", (req, res) => {
 app.delete("/removeEvent/:name", (req, res) => {
     console.log(req.params);
     console.log(req.params.name);
-    eventName = req.params.name;
+    eventName = req.params.namconst;
     for(var i = 0; i < savedEventList.length; i++) {
         if(eventName == savedEventList[i].event) {
             console.log("entry exists get ready for DELETION!");
@@ -123,6 +125,18 @@ function deleteFile(num) {
     fileSystemModule.unlinkSync(path);
 }
 
+function runShellScripts() {
+    runScript("zbaucrawler.sh -v");
+}
 
-
+function runScript(command) {
+    var zbauScript = exec('bash ' + command,
+        (error, stdout, stderr) => {
+            console.log(stdout);
+            console.log(stderr);
+            if (error !== null) {
+                console.log(`exec error: ${error}`);
+            }
+        });
+}
 
