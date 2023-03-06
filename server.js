@@ -63,7 +63,7 @@ app.post("/save", (req, res) => {
 app.delete("/removeEvent/:name", (req, res) => {
     console.log(req.params);
     console.log(req.params.name);
-    eventName = req.params.namconst;
+    eventName = req.params.name;
     for(var i = 0; i < savedEventList.length; i++) {
         if(eventName == savedEventList[i].event) {
             console.log("entry exists get ready for DELETION!");
