@@ -1,6 +1,6 @@
 # pageextractor
 
-"Spotlight" a webapp by Robert Eckstein | still in development 7.12.2022
+"Spotlight" a webapp by Robert Eckstein | still in development 8.3.2023
 
 The Pageextractor "Spotlight" is a Webapp which is supposed to fetch Data from different Websites to process them and afterwards display them.
 The main purpose is to display upcoming events and save them to a "interested-list".  
