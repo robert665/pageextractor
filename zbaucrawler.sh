@@ -69,11 +69,14 @@ if [[ $verbose -eq 1 ]]; then
 else 
 	wget -q www.z-bau.com/programm
 fi
+
 exit_code=$?
+
 if [ $exit_code -ne 0 ]; then
 	echo -e "${RED}Wget could not reach for www.z-bau.com/programm${color_off}"
 	exit 1
 fi
+
 if [ ! -d "res" ]
 then
     echo -e "${YELLOW}Folder res does not exist${color_off}"
@@ -82,35 +85,74 @@ then
 else
     log "Folder res exists"
 fi
-mv programm res/
-grep data-url=\"https://z-bau.com/programm res/programm | cut -d "/" --fields 5-7 | grep -v \" > res/events.txt
+
+if [ ! -d "res/event_tmp" ]
+then
+    echo -e "${YELLOW}Folder res/event_tmp does not exist${color_off}"
+    mkdir ./res
+    echo "Folder res/event_tmp created"
+else
+    log "Folder res/event_tmp exists"
+fi
+
+if [ ! -d "res/event_tmp/zbau" ]
+then
+    echo -e "${YELLOW}Folder res/event_tmp/zbau does not exist${color_off}"
+    mkdir ./res
+    echo "Folder res/event_tmp/zbau created"
+else
+    log "Folder res/event_tmp/zbau exists"
+fi
+
+if [ ! -d "res/htmls" ]
+then
+    echo -e "${YELLOW}Folder res/htmls does not exist${color_off}"
+    mkdir ./res
+    echo "Folder res/htmls created"
+else
+    log "Folder res/htmls exists"
+fi
+
+mv programm zbau_programm
+mv zbau_programm res/htmls
+grep data-url=\"https://z-bau.com/programm res/htmls/zbau_programm | cut -d "/" --fields 5-7 | grep -v \" > res/event_tmp/zbau/events.txt
+
 if [[ $data -eq 1 ]]; then
 	echo ---------------Events-----------------------------------------------------
 	cat res/events.txt
 fi
+
 #Block 2
-sed 's/^/https:\/\/z-bau.com\/programm\//' res/events.txt > res/eventlinks.txt
+sed 's/^/https:\/\/z-bau.com\/programm\//' res/event_tmp/zbau/events.txt > res/event_tmp/zbau/eventlinks.txt
+
 if [[ $data -eq 1 ]]; then
 	echo ---------------Event Links------------------------------------------------
 	cat res/eventlinks.txt
 fi
+
 #Block 3
-sed -n '/event__info-text/,/div/{s/div/DELIMITER/;/event__info-text/d;p}' res/programm | tr -d '\n' | sed 's/DELIMITER/\n/g' | tr -d '"' > res/oneliners.txt
+sed -n '/event__info-text/,/div/{s/div/DELIMITER/;/event__info-text/d;p}' res/htmls/zbau_programm | tr -d '\n' | sed 's/DELIMITER/\n/g' | tr -d '"' > res/event_tmp/zbau/oneliners.txt
+
 if [[ $data -eq 1 ]]; then
 	echo ---------------Event Texts------------------------------------------------
 	cat res/oneliners.txt
 fi
+
 #Block 4
-sed -n '/event__main-title/,/\/span/{s/\/span/DELIMITER/;/\/span/d;p}' res/programm | tr -d '\n' | sed 's/DELIMITER/\n/g' | tr '>' ':' |sed -e 1's/.*/: &/'  | cut -d : --field 4 | tr -d  "<" > res/titel.txt
+sed -n '/event__main-title/,/\/span/{s/\/span/DELIMITER/;/\/span/d;p}' res/htmls/zbau_programm | tr -d '\n' | sed 's/DELIMITER/\n/g' | tr '>' ':' |sed -e 1's/.*/: &/'  | cut -d : --field 4 | tr -d  "<" > res/event_tmp/zbau/titel.txt
+
 if [[ $data -eq 1 ]]; then
 	echo ---------------Event Titles-----------------------------------------------
 	cat res/titel.txt
 fi
+
 #Block 5
-lines=$(wc -l < res/events.txt)
+lines=$(wc -l < res/event_tmp/zbau/events.txt)
 log "$lines entries registered"
+
 digit1=${lines:0:1}
 digit2=${lines:1:2}
+
 if [ ! -d "res/jsons" ]
 then
     echo -e "${YELLOW}Folder res/jsons does not exist${color_off}"
@@ -127,12 +169,12 @@ while [ $a -le $digit1 ]; do
 	if [ $a -lt $digit1 ]; then
 		
 		while [ $b -le 9 ]; do
-		        eventline=$(sed -n "$i p" < res/events.txt)
+		        eventline=$(sed -n "$i p" < res/event_tmp/zbau/events.txt)
 			date=$(echo $eventline | cut -d "/" --field 1)
 			location=$(echo $eventline |cut -d "/" --field 2)
-			event=$(sed -n "$i p" < res/titel.txt)
-			link=$(sed -n "$i p" < res/eventlinks.txt)
-			text=$(sed -n "$i p" < res/oneliners.txt)
+			event=$(sed -n "$i p" < res/event_tmp/zbau/titel.txt)
+			link=$(sed -n "$i p" < res/event_tmp/zbau/eventlinks.txt)
+			text=$(sed -n "$i p" < res/event_tmp/zbau/oneliners.txt)
 			
 			JSON='{"link":"'"$link"'","event":"'"$event"'","text":"'"$text"'","date":"'"$date"'","location":"'"$location"'"}'
 			echo $JSON | jq > res/jsons/"$a$b"object.json
@@ -148,12 +190,12 @@ while [ $a -le $digit1 ]; do
 	else
 		
 		while [ $b -lt $digit2 ]; do
-		        eventline=$(sed -n "$i p" < res/events.txt)
+		        eventline=$(sed -n "$i p" < res/event_tmp/zbau/events.txt)
 			date=$(echo $eventline | cut -d "/" --field 1)
 			location=$(echo $eventline |cut -d "/" --field 2)
 			event=$(echo $eventline |cut -d "/" --field 3)
-			link=$(sed -n "$i p" < res/eventlinks.txt)
-			text=$(sed -n "$i p" < res/oneliners.txt)
+			link=$(sed -n "$i p" < res/event_tmp/zbau/eventlinks.txt)
+			text=$(sed -n "$i p" < res/event_tmp/zbau/oneliners.txt)
 			
 			JSON='{"link":"'"$link"'","event":"'"$event"'","text":"'"$text"'","date":"'"$date"'","location":"'"$location"'"}'
 			echo $JSON | jq > res/jsons/"$a$b"object.json
